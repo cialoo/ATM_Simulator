@@ -1,19 +1,24 @@
 package org.example;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
 
 public class Atm {
 
-    private List<Account> accounts = new ArrayList<>();
+    static List<Account> accounts = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
     private boolean isRunningMenuATM = true;
     private boolean isRunningMenuAfterLogin;
 
     public Atm() {
         System.out.println("Welcome to the Sniadek ATM!!!");
+        FileOperations.loadAccounts();
         while (isRunningMenuATM) {
             menuATM();
         }
+        FileOperations.saveAccounts();
     }
 
     private void menuATM() {
