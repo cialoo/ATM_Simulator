@@ -58,7 +58,8 @@ public class Atm {
             System.out.println("1. Check your account balance.");
             System.out.println("2. Deposit money on account.");
             System.out.println("3. Withdraw money from your account.");
-            System.out.println("4. Logout.");
+            System.out.println("4. Delete your account.");
+            System.out.println("5. Logout.");
             try {
                 int choose = scanner.nextInt();
 
@@ -73,6 +74,9 @@ public class Atm {
                         withdrawFunds(id);
                         break;
                     case 4:
+                        deleteAccount(id);
+                        break;
+                    case 5:
                         System.out.println("You are logout.");
                         isRunningMenuAfterLogin = false;
                         break;
@@ -118,6 +122,47 @@ public class Atm {
 
         } else {
             System.out.println("PIN must consist of 4 digits!");
+        }
+    }
+
+    private void deleteAccount(int id) {
+        System.out.print("If you are sure to delete the account type YES: ");
+        String isSure = scanner.next();
+        if(isSure.equals("YES")) {
+            try {
+                System.out.print("Enter card number: ");
+                int cardNumber = scanner.nextInt();
+
+                System.out.print("Enter PIN: ");
+                String pin = scanner.next();
+
+                if(isPinNumeric(pin)) {
+                    int accountId = findAccountReturnId(pin, cardNumber);
+                    if(accountId == id) {
+                        Account account = findAccountReturnAccount(accountId);
+                        int balance = account.getBalance();
+                        if(balance > 0) {
+                            account.setBalance(0);
+                            System.out.printf("Withdrawn:  %.2f PLN%n", balance / 100.0);
+                            System.out.println("The money was withdrawn from your account.");
+                        }
+                        accounts.remove(account);
+                        System.out.println("Your account has been deleted!");
+                        isRunningMenuAfterLogin = false;
+                    } else {
+                        System.out.println("You enter wrong PIN or card number!");
+                    }
+
+                } else {
+                    System.out.println("The PIN must consist of digits!");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("The Card number must consist of digits!");
+                scanner.nextLine();
+            }
+        } else {
+            System.out.println("Account deletion canceled.");
         }
     }
 
@@ -167,6 +212,7 @@ public class Atm {
             int balance = (int) Math.round(funds * 100);
             Account account = findAccountReturnAccount(id);
             account.setBalance(account.getBalance() + balance);
+            System.out.printf("Deposited:  %.2f PLN%n", balance / 100.0);
             System.out.println("Funds have been added to the account.");
 
         } catch (InputMismatchException e) {
@@ -190,6 +236,7 @@ public class Atm {
             Account account = findAccountReturnAccount(id);
             if(account.getBalance() >= balance) {
                 account.setBalance(account.getBalance() - balance);
+                System.out.printf("Withdrawn:  %.2f PLN%n", balance / 100.0);
                 System.out.println("The money was withdrawn from your account.");
             } else {
                 System.out.println("You do not have sufficient funds in your account!");
@@ -200,7 +247,7 @@ public class Atm {
         }
     }
 
-    public static boolean isPinNumeric(String pin) {
+    private static boolean isPinNumeric(String pin) {
         return pin.matches("\\d+");
     }
 
