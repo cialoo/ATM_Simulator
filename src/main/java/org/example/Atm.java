@@ -86,9 +86,9 @@ public class Atm {
         }
     }
 
-    private int findAccountReturnId(int pin, int cardNumber) {
+    private int findAccountReturnId(String pin, int cardNumber) {
         for (Account account : accounts) {
-            if (account.getPin() == pin && account.getCardNumber() == cardNumber) {
+            if (account.getPin().equals(pin) && account.getCardNumber() == cardNumber) {
                 return account.getId();
             }
         }
@@ -107,36 +107,30 @@ public class Atm {
 
     private void createAccount() {
         System.out.print("Set PIN: ");
-        try {
-            int pin = scanner.nextInt();
-            if(String.valueOf(pin).length() == 4) {
-                int id = AccountManager.generateUniqueAccountId();
-                int cardNumber = AccountManager.generateUniqueAccountCardNumber();
-                Account account = new Account(id, pin, cardNumber);
-                accounts.add(account);
-                System.out.println("You created an account.");
-                System.out.println("Here is your card number: " + cardNumber);
+        String pin = scanner.next();
+        if(isPinNumeric(pin) && pin.length() == 4) {
+            int id = AccountManager.generateUniqueAccountId();
+            int cardNumber = AccountManager.generateUniqueAccountCardNumber();
+            Account account = new Account(id, pin, cardNumber);
+            accounts.add(account);
+            System.out.println("You created an account.");
+            System.out.println("Here is your card number: " + cardNumber);
 
-            } else {
-                System.out.println("PIN must consist of 4 digits!");
-            }
-
-        } catch (InputMismatchException e) {
-            System.out.println("PIN must consist of 4 digits");
-            scanner.nextLine();
+        } else {
+            System.out.println("PIN must consist of 4 digits!");
         }
     }
 
     private void loginAccount() {
 
         try {
-            System.out.println("Enter card number:");
+            System.out.print("Enter card number: ");
             int cardNumber = scanner.nextInt();
 
-            try {
-                System.out.println("Enter PIN:");
-                int pin = scanner.nextInt();
+            System.out.print("Enter PIN: ");
+            String pin = scanner.next();
 
+            if(isPinNumeric(pin)) {
                 if(findAccountReturnId(pin, cardNumber) != 0) {
                     isRunningMenuAfterLogin = true;
                     menuAfterLogin(findAccountReturnId(pin, cardNumber));
@@ -144,9 +138,8 @@ public class Atm {
                         System.out.println("You enter wrong PIN or card number!");
                 }
 
-            } catch (InputMismatchException e) {
+            } else {
                 System.out.println("The PIN must consist of digits!");
-                scanner.nextLine();
             }
 
         } catch (InputMismatchException e) {
@@ -162,9 +155,15 @@ public class Atm {
     }
 
     private void addFunds(int id) {
-        System.out.print("What amount do you want to deposit? ");
+        System.out.print("What amount do you want to deposit?: ");
         try {
-            double funds = scanner.nextDouble();
+            String input = scanner.next();
+            if(!input.matches("\\d+,\\d{2}")) {
+                System.out.println("Enter the amount in the appropriate format, e.g. 99,99!");
+                return;
+            }
+            input = input.replace(",", ".");
+            double funds = Double.parseDouble(input);
             int balance = (int) Math.round(funds * 100);
             Account account = findAccountReturnAccount(id);
             account.setBalance(account.getBalance() + balance);
@@ -178,9 +177,15 @@ public class Atm {
     }
 
     private void withdrawFunds(int id) {
-        System.out.print("What amount do you want to withdraw from your account? ");
+        System.out.print("What amount do you want to withdraw from your account?: ");
         try {
-            double funds = scanner.nextDouble();
+            String input = scanner.next();
+            if(!input.matches("\\d+,\\d{2}")) {
+                System.out.println("Enter the amount in the appropriate format, e.g. 99,99!");
+                return;
+            }
+            input = input.replace(",", ".");
+            double funds = Double.parseDouble(input);
             int balance = (int) Math.round(funds * 100);
             Account account = findAccountReturnAccount(id);
             if(account.getBalance() >= balance) {
@@ -194,4 +199,9 @@ public class Atm {
             scanner.nextLine();
         }
     }
+
+    public static boolean isPinNumeric(String pin) {
+        return pin.matches("\\d+");
+    }
+
 }

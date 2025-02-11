@@ -16,7 +16,7 @@ public class FileOperations {
                 String[] parts = line.split(";");
                 int id = Integer.parseInt(parts[0]);
                 int cardNumber = Integer.parseInt(parts[1]);
-                int pin = Integer.parseInt(parts[2]);
+                String pin = parts[2];
                 int balance = Integer.parseInt(parts[3]);
                 Account account = new Account(id, pin, cardNumber);
                 account.setBalance(balance);

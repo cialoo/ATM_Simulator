@@ -4,10 +4,10 @@ public class Account {
 
     private int id;
     private int cardNumber;
-    private int pin;
+    private String pin;
     private int balance;
 
-    Account(int id, int pin, int cardNumber) {
+    Account(int id, String pin, int cardNumber) {
         this.id = id;
         this.cardNumber = cardNumber;
         this.pin = pin;
@@ -22,7 +22,7 @@ public class Account {
         return cardNumber;
     }
 
-    public int getPin() {
+    public String getPin() {
 
         return pin;
     }
